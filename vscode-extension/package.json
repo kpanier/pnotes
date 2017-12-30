@@ -1,0 +1,97 @@
+{
+  "name": "personal-notes",
+  "displayName": "personal-notes",
+  "description": "",
+  "version": "0.0.1",
+  "publisher": "aysada",
+  "engines": {
+    "vscode": "^1.18.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:pnote.openNote",
+    "onCommand:pnote.addNote",
+    "onView:pnote"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "pnote",
+          "name": "Personal Notes"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "pnote.openNote",
+        "title": "Open Personal note"
+      },
+      {
+        "command": "pnote.addNote",
+        "title": "Add Personal note",
+        "icon": {
+          "light": "resources/dark/document.svg",
+          "dark": "resources/dark/document.svg"
+        }
+      },
+      {
+        "command": "pnote.deleteNote",
+        "title": "Delete Perosnal note"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "pnote.addNote",
+          "when": "view == pnote"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "pnote.deleteNote",
+          "when": "view == pnote"
+        }
+      ]
+    },
+    "configuration": [
+        {
+          "title": "Personal note username",
+          "properties": {
+            "pnote.username": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "title": "Personal note base url",
+          "properties": {
+            "pnote.baseurl": {
+              "type": "string",
+              "default": "http://localhost:3000"
+            }
+          }
+        }
+      ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.6",
+    "@types/node": "^7.0.43",
+    "@types/mocha": "^2.2.42"
+  },
+  "dependencies": {
+    "ts-md5": "^1.2.2",
+    "typed-rest-client": "^0.15.1"
+  }
+}

@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>List</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div #decorate class="decorator">
+    <button (click)="save()">
+      <ion-icon name="checkmark-circle"></ion-icon>
+      Save</button>
+  </div>
+  <b>
+    <div contenteditable="true" tappable [(ngModel)]="aNote.name">
+    </div>
+  </b>
+  <br>
+  <div>
+    <div ace-editor [(text)]="aNote.content" [readOnly]="false" [theme]="'eclipse'" [autoUpdateContent]="true" style="min-height: 400px; height:100%; width:100%; overflow: auto;"></div>
+  </div>
+</ion-content>
