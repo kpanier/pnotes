@@ -1,8 +1,8 @@
 import { NotesManager } from './NotesManager';
 import { UserManager } from './UserManager';
 import express = require('express');
+import https = require('https');
 import { NotesEndPointBuilder } from './notesEndPoint';
-import { request } from 'http';
 import { getSecret } from './Util';
 import jwt = require('jsonwebtoken');
 
@@ -34,7 +34,18 @@ export class APIServer {
         this.createHelloMessageEndpoint();
         this.server.use('/notes', this.createNoteManagementEndpoints(new NotesManager(this.mongodb)));
         this.createAthenticationEndPoint();
-        this.server.listen(3000);
+        if (process.env.httpsprivatekey && process.env.httpscertificate) {
+            console.log('Use https config.')
+            let fs = require('fs');
+            let privateKey = fs.readFileSync(process.env.httpsprivatekey, 'utf8');
+            let certificate = fs.readFileSync(process.env.httpscertificate, 'utf8');
+            let credentials = { key: privateKey, cert: certificate };
+            let httpsServer = https.createServer(credentials, this.server);
+            httpsServer.listen(3443);
+        }
+        else {
+            this.server.listen(3000);
+        }
     }
 
     createNoteManagementEndpoints(notesManager: NotesManager): any {
