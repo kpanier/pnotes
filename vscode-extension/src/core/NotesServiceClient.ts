@@ -1,5 +1,6 @@
 import { Note } from './model';
 import * as httpm from 'typed-rest-client/HttpClient';
+import * as ifm from 'typed-rest-client/Interfaces';
 import { request } from 'http';
 import * as vscode from 'vscode';
 import { read } from 'fs';
@@ -7,8 +8,23 @@ import { InputBoxOptions, window } from 'vscode';
 
 export class NotesServiceClient {
 
-    httpCl: httpm.HttpClient = new httpm.HttpClient('pnote-vscode-agent');
+    httpCl: httpm.HttpClient;
     token: string;
+
+    constructor() {
+        if (vscode.workspace.getConfiguration('pnote').get('proxyurl')) {
+            let proxyCfg: ifm.IProxyConfiguration = {
+                proxyUrl: vscode.workspace.getConfiguration('pnote').get('proxyurl'),
+                proxyUsername: vscode.workspace.getConfiguration('pnote').get('proxyusername'),
+                proxyPassword: vscode.workspace.getConfiguration('pnote').get('proxypassword')
+            }
+            let options: ifm.IRequestOptions = { proxy: proxyCfg, ignoreSslError: true }
+            this.httpCl = new httpm.HttpClient('pnote-vscode-agent', [], options)
+        }
+        else {
+            this.httpCl = new httpm.HttpClient('pnote-vscode-agent');
+        }
+    }
 
     createHeaders(): any {
         return {
@@ -77,7 +93,7 @@ export class NotesServiceClient {
         let result: string = vscode.workspace.getConfiguration('pnote').get('baseurl');
         return result;
     }
-    
+
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error); // for development purposes only
         return Promise.reject(error.message || error)
@@ -91,12 +107,14 @@ export class NotesServiceClient {
 
     async reciveNewToken() {
         let userName = vscode.workspace.getConfiguration('pnote').get('username');
+        this.httpCl
         if (!userName) {
             await window.showInputBox({ prompt: 'Username for personal notes:' }).then(s => userName = s);
         }
         let password;
-        await window.showInputBox({ prompt: 'Password for personal notes:' }).then(s => password = s);
+        await window.showInputBox({ prompt: 'Password for personal notes:', password: true }).then(s => password = s);
         let login = { userName: userName, password: password };
+        console.log("send login");
         await this.httpCl.post(this.getBaseUrl() + "/login", JSON.stringify(login), { 'Content-Type': 'application/json' }).then(async response =>
             this.token = JSON.parse(await response.readBody()).token
         );

@@ -74,6 +74,33 @@
               "default": "http://localhost:3000"
             }
           }
+        },
+        {
+          "title": "Personal note proxy url",
+          "properties": {
+            "pnote.proxyurl": {
+              "type": "string",
+              "default": "http://proxy"
+            }
+          }
+        },
+        {
+          "title": "Personal note proxy username",
+          "properties": {
+            "pnote.proxyusername": {
+              "type": "string",
+              "default": "user"
+            }
+          }
+        },
+        {
+          "title": "Personal note proxy password",
+          "properties": {
+            "pnote.proxypassword": {
+              "type": "string",
+              "default": "pwd"
+            }
+          }
         }
       ]
   },

@@ -1,2 +1,4 @@
 mongo-data/
 docker-compose.yml
+localNotes.md
+service/*.pem

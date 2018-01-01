@@ -12,7 +12,7 @@ The usage of the app is between a personal note and a personal wiki.
 
 ## Usage
 
-- Notes list: http://localhost:3000/notes
+* Notes list: http://localhost:3000/notes
 
 ## Development
 
@@ -20,12 +20,12 @@ The usage of the app is between a personal note and a personal wiki.
 
 #### Service
 
-- Compile all the time: `npm run tsc`
-- Run service hot code replacement: `npm run serve`
+* Compile all the time: `npm run tsc`
+* Run service hot code replacement: `npm run serve`
 
 #### Mobile App
 
-ionic serve
+* ionic serve
 
 ### Inspect
 

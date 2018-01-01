@@ -20,6 +20,15 @@ export class NotesManager {
     }
 
     getNoteList(): Promise<Note[]> {
+        if (this.notes) {
+            return Promise.resolve(Array.from(this.notes.values()));
+        }
+        else {
+            return this.getNoteListRefreshed();
+        }
+    }
+
+    getNoteListRefreshed(): Promise<Note[]> {
         this.notes = new Map();
         return new Promise(async (resolve, reject) => {
             await this.fs.readdir(this.notesHome, async (err, files) => {
@@ -78,11 +87,11 @@ export class NotesManager {
         return this.notes.get(name).contentHashCode == this.hashCodeOf(this.notes.get(name).localFilePath);
     }
 
-    createNote(name: string): Promise<string> {
+    async createNote(name: string): Promise<string> {
         let n = new Note();
         n.name = name;
         n.content = '';
-        this.service.addNote(n);
+        await this.service.addNote(n);
         return this.writeNote(name, '');
     }
 
@@ -109,10 +118,9 @@ export class NotesManager {
                 if (noteIndex.get(noteName) && Md5.hashStr(newContent) != noteIndex.get(noteName).contentHashCode) {
                     console.log('Real file change detected for ' + filename);
                     let note = this.service.getNote(noteIndex.get(noteName)._id);
-                    note.then(n => {
+                    note.then(async n => {
                         n.content = newContent;
-                        console.log('>>> udpate now')
-                        this.service.updateNote(n);
+                        await this.service.updateNote(n);
                         this.eventListener.fire();
                     });
                 }
