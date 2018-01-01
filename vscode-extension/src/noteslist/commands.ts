@@ -13,7 +13,7 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
             manager.getNoteList().then(notes => {
                 let pick: Thenable<NotePickItem> = vscode.window.showQuickPick(notes.map(n => new NotePickItem(n)), {});
                 pick.then(sel => {
-                    openNote(sel.noteId, manager);
+                    openNote(sel.label, manager);
                 });
             });
         }
@@ -49,7 +49,7 @@ class NotePickItem implements QuickPickItem {
 
     label: string;
     description: string;
-    noteId: any
+    noteId: any;
 
     constructor(note: Note) {
         this.label = note.name;

@@ -13,6 +13,8 @@
   <ion-input placeholder="Username" [(ngModel)]="username"></ion-input>
   <ion-label color="primary">Password</ion-label>
   <ion-input type="password" [(ngModel)]="password" placeholder="password"></ion-input>
+  <ion-label color="primary">Personal Note Server</ion-label>
+  <ion-input placeholder="https://axample.com" [(ngModel)]="pnoteUrl"></ion-input>
   <button ion-button round (click)="login()">Login</button>
   {{message}}
 </ion-content>
