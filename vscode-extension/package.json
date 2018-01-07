@@ -2,7 +2,7 @@
   "name": "personal-notes",
   "displayName": "personal-notes",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "aysada",
   "engines": {
     "vscode": "^1.18.0"
@@ -34,20 +34,34 @@
         "command": "pnote.addNote",
         "title": "Add Personal note",
         "icon": {
-          "light": "resources/dark/document.svg",
+          "light": "resources/light/document.svg",
           "dark": "resources/dark/document.svg"
         }
       },
       {
         "command": "pnote.deleteNote",
         "title": "Delete Perosnal note"
+      },
+      {
+        "command": "pnote.syncNote",
+        "title": "Sync Perosnal notes",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
       }
     ],
     "menus": {
       "view/title": [
         {
           "command": "pnote.addNote",
-          "when": "view == pnote"
+          "when": "view == pnote",
+          "group": "navigation"
+        },
+        {
+          "command": "pnote.syncNote",
+          "when": "view == pnote",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -58,51 +72,51 @@
       ]
     },
     "configuration": [
-        {
-          "title": "Personal note username",
-          "properties": {
-            "pnote.username": {
-              "type": "string"
-            }
-          }
-        },
-        {
-          "title": "Personal note base url",
-          "properties": {
-            "pnote.baseurl": {
-              "type": "string",
-              "default": "http://localhost:3000"
-            }
-          }
-        },
-        {
-          "title": "Personal note proxy url",
-          "properties": {
-            "pnote.proxyurl": {
-              "type": "string",
-              "default": "http://proxy"
-            }
-          }
-        },
-        {
-          "title": "Personal note proxy username",
-          "properties": {
-            "pnote.proxyusername": {
-              "type": "string",
-              "default": "user"
-            }
-          }
-        },
-        {
-          "title": "Personal note proxy password",
-          "properties": {
-            "pnote.proxypassword": {
-              "type": "string",
-              "default": "pwd"
-            }
+      {
+        "title": "Personal note username",
+        "properties": {
+          "pnote.username": {
+            "type": "string"
           }
         }
-      ]
+      },
+      {
+        "title": "Personal note base url",
+        "properties": {
+          "pnote.baseurl": {
+            "type": "string",
+            "default": "http://localhost:3000"
+          }
+        }
+      },
+      {
+        "title": "Personal note proxy url",
+        "properties": {
+          "pnote.proxyurl": {
+            "type": "string",
+            "default": "http://proxy"
+          }
+        }
+      },
+      {
+        "title": "Personal note proxy username",
+        "properties": {
+          "pnote.proxyusername": {
+            "type": "string",
+            "default": "user"
+          }
+        }
+      },
+      {
+        "title": "Personal note proxy password",
+        "properties": {
+          "pnote.proxypassword": {
+            "type": "string",
+            "default": "pwd"
+          }
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
