@@ -35,4 +35,8 @@ export class Editor implements OnInit {
     }
   }
 
+  public abort() {
+    this.navCtrl.pop();
+  }
+
 }

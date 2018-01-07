@@ -26,7 +26,7 @@ export class HomePage {
       if (status = 200) {
         this.storage.set("url", this.pnoteUrl);
         this.storage.set("username", this.username);
-        this.navCtrl.push(ListPage);
+        this.navCtrl.setRoot(ListPage);
       }
       else {
         this.message = 'Login failed.'
