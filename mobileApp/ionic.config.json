@@ -1,6 +1,6 @@
 {
-  "name": "mobileApp",
-  "app_id": "",
+  "name": "Personal notes",
+  "app_id": "org.aysada.pnotes",
   "type": "ionic-angular",
   "integrations": {
     "cordova": {}

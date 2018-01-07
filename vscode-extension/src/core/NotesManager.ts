@@ -52,6 +52,7 @@ export class NotesManager {
                 });
                 this.fs.writeFile(this.noteIndex, JSON.stringify(Array.from(this.notes.values())), (error) => { if (error) { console.log(error) } });
             }).catch((error) => console.log("Unable to connect to remote server: " + error));
+            this.eventListener.fire();
             resolve(Array.from(this.notes.values()));
         });
     }
@@ -121,6 +122,7 @@ export class NotesManager {
                     note.then(async n => {
                         n.content = newContent;
                         await this.service.updateNote(n);
+                        console.log('Note updated on backend ' + n.name);
                         this.eventListener.fire();
                     });
                 }

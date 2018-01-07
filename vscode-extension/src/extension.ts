@@ -11,10 +11,6 @@ import { NotesManager } from './core/NotesManager';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "enc-notes" is now active!');
-
     let manager = new NotesManager(); 
     let provider = new NotesProvider(manager);
     manager.eventListener = provider.noteEventEmitter;

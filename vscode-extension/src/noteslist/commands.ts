@@ -33,6 +33,11 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
     context.subscriptions.push(vscode.commands.registerCommand('pnote.deleteNote',
         note => { vscode.window.showInformationMessage("Delete") }
     ));
+    context.subscriptions.push(vscode.commands.registerCommand('pnote.syncNote',
+        () => { 
+            manager.getNoteListRefreshed();
+         }
+    ));
 }
 
 function openNote(id: any, manager: NotesManager) {
