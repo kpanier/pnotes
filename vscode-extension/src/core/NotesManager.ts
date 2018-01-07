@@ -116,7 +116,7 @@ export class NotesManager {
                 processingFiles.push(filename);
                 let newContent = this.fs.readFileSync(this.notesHome + filename, 'UTF-8');
                 let noteName = filename.substring(0, filename.lastIndexOf('.'));
-                if (noteIndex.get(noteName) && Md5.hashStr(newContent) != noteIndex.get(noteName).contentHashCode) {
+                if (vscode.window.state.focused && noteIndex.get(noteName) && Md5.hashStr(newContent) != noteIndex.get(noteName).contentHashCode) {
                     console.log('Real file change detected for ' + filename);
                     let note = this.service.getNote(noteIndex.get(noteName)._id);
                     note.then(async n => {
