@@ -7,10 +7,11 @@
   </ion-navbar>
   <button ion-button (click)="save()"> Save </button>
   <button ion-button (click)="abort()"> Cancel </button>
+  <button ion-button>{{state}}</button>
 </ion-header>
 
 <ion-content>
   <div>
-    <div id="editor" ace-editor [(text)]="aNote.content" [readOnly]="false" [theme]="'eclipse'" [autoUpdateContent]="true" style="min-height: 400px; height:100%; width:100%; overflow: auto;"></div>
+    <div id="editor" ace-editor [(text)]="aNote.content" [readOnly]="false" [theme]="'eclipse'" [autoUpdateContent]="true"> </div>
   </div>
 </ion-content>
