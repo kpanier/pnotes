@@ -77,6 +77,11 @@ export class NotesManager {
         if (!this.notes.get(name).local || !this.isLocalNoteUpToDate(name)) {
             return this.getNote(this.notes.get(name)._id).then(
                 async n => {
+                    n.local = true;
+                    n.remote = true;
+                    n.localFilePath = this.notesHome + name + '.md';;
+                    this.notes.set(name, n);
+                    this.eventListener.fire();
                     return this.writeNote(n.name, n.content);
                 }
             );
