@@ -34,9 +34,9 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
         note => { vscode.window.showInformationMessage("Delete") }
     ));
     context.subscriptions.push(vscode.commands.registerCommand('pnote.syncNote',
-        () => { 
+        () => {
             manager.getNoteListRefreshed();
-         }
+        }
     ));
 }
 
@@ -44,7 +44,7 @@ function openNote(id: any, manager: NotesManager) {
     manager.getNotePath(id).then(path => {
         let uri = vscode.Uri.file(path);
         vscode.workspace.openTextDocument(uri).then(textDocument => {
-            vscode.window.showTextDocument(textDocument, 1, false)
+            vscode.window.showTextDocument(textDocument, 1, false);
         });
     });
 }

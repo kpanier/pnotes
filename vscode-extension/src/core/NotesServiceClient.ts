@@ -4,7 +4,7 @@ import * as ifm from 'typed-rest-client/Interfaces';
 import { request } from 'http';
 import * as vscode from 'vscode';
 import { read } from 'fs';
-import { InputBoxOptions, window } from 'vscode';
+import { InputBoxOptions, window, Progress } from 'vscode';
 
 export class NotesServiceClient {
 
@@ -34,51 +34,64 @@ export class NotesServiceClient {
     };
 
     async getNoteList(): Promise<Note[]> {
-        await this.checkToken();
-        return await this.httpCl.get(this.getNotesBaseURL(), this.createHeaders()).then(async response => {
-            if (response.message.statusCode == 403) {
-                await this.reciveNewToken();
-                return this.getNoteList();
-            }
-            else {
-                let notes: Note[] = JSON.parse(await response.readBody()) as Note[];
-                notes.forEach(n => n.remote = true);
-                return notes;
-            }
-        }).catch(this.handleError);
+        return window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Load all notes' }, async p => {
+            await this.checkToken(p);
+            p.report({ message: 'Loading notes from remote' });
+            return await this.httpCl.get(this.getNotesBaseURL(), this.createHeaders()).then(async response => {
+                if (response.message.statusCode == 403) {
+                    await this.reciveNewToken();
+                    return this.getNoteList();
+                }
+                else {
+                    p.report({ message: 'Setup local notes store' });
+                    let notes: Note[] = JSON.parse(await response.readBody()) as Note[];
+                    notes.forEach(n => n.remote = true);
+                    return notes;
+                }
+            }).catch(this.handleError);
+        });
     }
 
     async getNote(id: any): Promise<Note> {
-        await this.checkToken();
-        return await this.httpCl.get(this.getNotesBaseURL() + "/" + id, this.createHeaders()).then(async response => {
-            if (response.message.statusCode == 403) {
-                await this.reciveNewToken();
-                return this.getNote(id);
-            }
-            else {
-                return JSON.parse(await response.readBody()) as Note;
-            }
-        }).catch(this.handleError);
+        return window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Load note' }, async p => {
+            await this.checkToken(p);
+            p.report({ message: 'Loading note from remote' });
+            return this.httpCl.get(this.getNotesBaseURL() + "/" + id, this.createHeaders()).then(async response => {
+                if (response.message.statusCode == 403) {
+                    await this.reciveNewToken();
+                    return this.getNote(id);
+                }
+                else {
+                    return JSON.parse(await response.readBody()) as Note;
+                }
+            })
+        });
     }
 
     async updateNote(note: Note) {
-        await this.checkToken();
-        this.httpCl.put(this.getNotesBaseURL() + "/" + note._id, JSON.stringify(note), this.createHeaders()).then(async response => {
-            if (response.message.statusCode == 403) {
-                await this.reciveNewToken();
-                this.updateNote(note);
-            }
-        }).catch(this.handleError);
+        window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Update note' }, async p => {
+            await this.checkToken(p);
+            p.report({ message: 'Update note on remote' });
+            this.httpCl.put(this.getNotesBaseURL() + "/" + note._id, JSON.stringify(note), this.createHeaders()).then(async response => {
+                if (response.message.statusCode == 403) {
+                    await this.reciveNewToken();
+                    this.updateNote(note);
+                }
+            }).catch(this.handleError)
+        });
     }
 
     async addNote(note: Note) {
-        await this.checkToken();
-        this.httpCl.post(this.getNotesBaseURL(), JSON.stringify(note), this.createHeaders()).then(async response => {
-            if (response.message.statusCode == 403) {
-                await this.reciveNewToken();
-                this.addNote(note);
-            }
-        }).catch(this.handleError);
+        window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Update note' }, async p => {
+            await this.checkToken(p);
+            p.report({ message: 'Add note to remote' });
+            this.httpCl.post(this.getNotesBaseURL(), JSON.stringify(note), this.createHeaders()).then(async response => {
+                if (response.message.statusCode == 403) {
+                    await this.reciveNewToken();
+                    this.addNote(note);
+                }
+            }).catch(this.handleError);
+        });
     }
 
     // remove(note: Note) {
@@ -99,8 +112,14 @@ export class NotesServiceClient {
         return Promise.reject(error.message || error)
     }
 
-    async checkToken() {
+    async checkToken(p?: Progress<any>) {
+        if (p) {
+            p.report({ message: 'Check credentials' });
+        }
         if (!this.token) {
+            if (p) {
+                p.report({ message: 'Renew credentials' });
+            }
             await this.reciveNewToken();
         }
     }
