@@ -12,6 +12,7 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 export class Editor implements OnInit {
 
   aNote: Note;
+  state: string = '';
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private notesService: NotesService) {
   }
@@ -20,18 +21,38 @@ export class Editor implements OnInit {
     this.aNote = this.navParams.get('note');
     if (this.aNote._id) {
       console.log("Try to load: " + this.aNote);
-      this.notesService.getNote(this.aNote._id).then(n => this.aNote = n).catch((error) => this.navCtrl.push(HomePage));
+      this.state = 'Loading...';
+      this.notesService.getNote(this.aNote._id).then(n => {
+        this.aNote = n;
+        this.state = 'Loaded';
+      }).catch((error) => this.navCtrl.push(HomePage));
     }
   }
 
   public save() {
     if (this.aNote._id) {
-      console.log('Save -> update note');
-      this.notesService.updateNote(this.aNote).then(r => { this.notesService.getNote(this.aNote._id).then(n => this.aNote = n); }).catch((error) => this.navCtrl.push(HomePage));
+      this.state = 'Saving note...';
+      this.notesService.updateNote(this.aNote).then(r => {
+        if (r.statusCode == 200) {
+          this.state = 'Saving note done.';
+        }
+        this.notesService.getNote(this.aNote._id).then(n => {
+          this.aNote = n;
+          this.state = 'Synced.';
+        });
+      }).catch((error) => this.state = error);
     }
     else {
-      console.log('Save -> create note');
-      this.notesService.addNote(this.aNote).then(r => this.notesService.getNote(r).then(n => this.aNote = n)).catch((error) => this.navCtrl.push(HomePage));
+      this.state = 'Creating note...';
+      this.notesService.addNote(this.aNote).then(r => {
+        if (r.statusCode == 200) {
+          this.state = 'Creating note done.';
+        }
+        this.notesService.getNote(r).then(n => {
+          this.aNote = n;
+          this.state = 'Synced.'
+        });
+      }).catch((error) => this.navCtrl.push(HomePage));
     }
   }
 
