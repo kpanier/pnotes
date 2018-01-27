@@ -48,7 +48,7 @@ export class NotesEndPointBuilder {
 
     createGetNotesHistoryEndpoint(notesManager: NotesManager): any {
         return (request, response) => {
-            notesManager.getNoteHistoryForId(request.params.id).then(r => response.status(200).send(r));
+            notesManager.getNoteHistoryForId(request.params.id).then(r => response.status(200).send(r.history));
         }
     }
 
