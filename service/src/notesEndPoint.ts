@@ -11,6 +11,7 @@ export class NotesEndPointBuilder {
         notesAPI.get('/revision/', this.createGetRevisionEndpoint(notesManager));
         notesAPI.get('/', this.createGetNotesEndpoint(notesManager));
         notesAPI.get('/:id', this.createGetNotesDetailEndpoint(notesManager));
+        notesAPI.get('/:id/history', this.createGetNotesHistoryEndpoint(notesManager));
         notesAPI.post('/', this.createPostNoteEndpoint(notesManager));
         notesAPI.put('/:id', this.createPutNoteEndpoint(notesManager));
         notesAPI.delete('/:id', this.createDeleteNoteEndpoint(notesManager));
@@ -45,6 +46,12 @@ export class NotesEndPointBuilder {
         }
     }
 
+    createGetNotesHistoryEndpoint(notesManager: NotesManager): any {
+        return (request, response) => {
+            notesManager.getNoteHistoryForId(request.params.id).then(r => response.status(200).send(r));
+        }
+    }
+
     createGetNotesEndpoint(notesManager: NotesManager): any {
         return (request, response) => {
             notesManager.getAllNotes().then(r => response.status(200).send(r));
@@ -67,7 +74,7 @@ export class NotesEndPointBuilder {
 
     createSecurityFilter(): any {
         return (req, res, next) => {
-            if(req.method=='OPTIONS') {
+            if (req.method == 'OPTIONS') {
                 console.log('OPTIONS allowed');
                 return next();
             }

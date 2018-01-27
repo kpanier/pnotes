@@ -14,7 +14,11 @@ export class NotesManager {
     }
 
     getNoteWithId(id: string): Promise<Note> {
-        return this.mongodb.collection('notes').findOne({ _id: this.ObjectID(id) });
+        return this.mongodb.collection('notes').findOne({ _id: this.ObjectID(id) }, { history: 0 });
+    }
+
+    getNoteHistoryForId(id: string): Promise<Note> {
+        return this.mongodb.collection('notes').findOne({ _id: this.ObjectID(id) }, { content: 0 });
     }
 
     store(note: Note): Promise<any> {
