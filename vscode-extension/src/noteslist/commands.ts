@@ -33,7 +33,10 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
         }
     ));
     context.subscriptions.push(vscode.commands.registerCommand('pnote.deleteNote',
-        note => { vscode.window.showInformationMessage("Delete") }
+        note => { 
+            manager.remove(note);
+            noteEventEmitter.fire();
+        }
     ));
     context.subscriptions.push(vscode.commands.registerCommand('pnote.showHistory',
         note => {

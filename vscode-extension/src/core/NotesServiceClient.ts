@@ -56,7 +56,7 @@ export class NotesServiceClient {
         return window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Load note' }, async p => {
             await this.checkToken(p);
             p.report({ message: 'Loading note from remote' });
-            return this.httpCl.get(this.getNotesBaseURL() + "/" + id, this.createHeaders()).then(async response => {
+            return this.httpCl.get(this.getNotesBaseURL() + id, this.createHeaders()).then(async response => {
                 if (response.message.statusCode == 403) {
                     await this.reciveNewToken();
                     return this.getNote(id);
@@ -72,7 +72,7 @@ export class NotesServiceClient {
         return window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Load note' }, async p => {
             await this.checkToken(p);
             p.report({ message: 'Loading note history from remote' });
-            return await this.httpCl.get(this.getNotesBaseURL() + "/" + id + "/history", this.createHeaders()).then(async r => {
+            return await this.httpCl.get(this.getNotesBaseURL() + id + "/history", this.createHeaders()).then(async r => {
                 if (r.message.statusCode == 403) {
                     await this.reciveNewToken();
                     return this.getNoteHistory(id);
@@ -89,7 +89,7 @@ export class NotesServiceClient {
         window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Update note' }, async p => {
             await this.checkToken(p);
             p.report({ message: 'Update note on remote' });
-            this.httpCl.put(this.getNotesBaseURL() + "/" + note._id, JSON.stringify(note), this.createHeaders()).then(async response => {
+            this.httpCl.put(this.getNotesBaseURL() + note._id, JSON.stringify(note), this.createHeaders()).then(async response => {
                 if (response.message.statusCode == 403) {
                     await this.reciveNewToken();
                     this.updateNote(note);
@@ -111,12 +111,13 @@ export class NotesServiceClient {
         });
     }
 
-    // remove(note: Note) {
-    //     this.http.delete(this.getBaseURL() + note._id).toPromise().catch(this.handleError);
-    // }
+    async remove(note: Note) {
+        await this.checkToken();
+        this.httpCl.del(this.getNotesBaseURL() + note._id, this.createHeaders()).catch(this.handleError);
+    }
 
     private getNotesBaseURL(): string {
-        return this.getBaseUrl() + '/notes';
+        return this.getBaseUrl() + '/notes/';
     }
 
     private getBaseUrl(): string {

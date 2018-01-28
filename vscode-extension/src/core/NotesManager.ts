@@ -97,6 +97,14 @@ export class NotesManager {
         return this.notes.get(name).contentHashCode == this.hashCodeOf(this.notes.get(name).localFilePath);
     }
 
+    remove(note: Note) {
+        if(note.localFilePath) {
+            this.fs.unlink(note.localFilePath)
+        }
+        this.service.remove(note);
+        this.notes.delete(note.name);
+    }
+
     async createNote(name: string): Promise<string> {
         let n = new Note();
         n.name = name;
