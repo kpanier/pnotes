@@ -32,7 +32,8 @@ export class NotesManager {
         return result;
     }
 
-    update(id: any, note: Note) {
+    async update(id: any, note: Note) {
+        await this.getNoteHistoryForId(id).then(n => note.history = n.history);
         this.updateNoteHistoryState(note, this.computeOldContent(note));
         note._id = this.ObjectID(id);
         this.mongodb.collection('notes').update({ _id: this.ObjectID(id) }, note, { upsert: true });
