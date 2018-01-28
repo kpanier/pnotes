@@ -2,7 +2,7 @@
   "name": "personal-notes",
   "displayName": "personal-notes",
   "description": "",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "aysada",
   "engines": {
     "vscode": "^1.18.0"

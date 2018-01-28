@@ -3,9 +3,6 @@ import { QuickPickItem, window } from 'vscode';
 import { Note, NoteDiff } from '../core/model';
 import { NotesManager } from '../core/NotesManager';
 
-let DiffMatch = require('diff-match-patch');
-let df = new DiffMatch();
-
 export function registerCommands(context: vscode.ExtensionContext, manager: NotesManager, noteEventEmitter: vscode.EventEmitter<Note | null>) {
 
     context.subscriptions.push(vscode.commands.registerCommand('pnote.openNote', (id: any) => {
@@ -30,9 +27,11 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
                     vscode.workspace.openTextDocument(uri).then(textDocument => {
                         vscode.window.showTextDocument(textDocument, 1, false)
                     });
+                    noteEventEmitter.fire();
                 });
             });
-        }));
+        }
+    ));
     context.subscriptions.push(vscode.commands.registerCommand('pnote.deleteNote',
         note => { vscode.window.showInformationMessage("Delete") }
     ));
@@ -47,24 +46,25 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
             manager.getNoteListRefreshed();
         }
     ));
-    context.subscriptions.push(vscode.commands.registerCommand('pnote.openNoteHistory', (diff: NoteDiff) => {
-        let content: string = '';
-        let foundLast: boolean = false;
-        diff.parent.history.forEach(e => {
-            if (!foundLast) {
-                console.log(diff.creationDate)
-                if (e.creationDate == diff.creationDate) {
-                    foundLast = true;
+    context.subscriptions.push(vscode.commands.registerCommand('pnote.openNoteHistory',
+        (diff: NoteDiff) => {
+            let DiffMatch = require('diff-match-patch');
+            let df = new DiffMatch();
+            let content: string = '';
+            let foundLast: boolean = false;
+            diff.parent.history.forEach(e => {
+                if (!foundLast) {
+                    if (e.creationDate == diff.creationDate) {
+                        foundLast = true;
+                    }
+                    content = df.patch_apply(diff.diff, content)[0];
                 }
-                content = df.patch_apply(diff.diff, content)[0];
-            }
-        });
-        console.log('finaly: ' + content);
-        vscode.workspace.openTextDocument({ content: content }).then(textDocument => {
-            console.log("openeing for: " + content);
-            vscode.window.showTextDocument(textDocument, 1, false)
-        });
-    }));
+            });
+            vscode.workspace.openTextDocument({ content: content }).then(textDocument => {
+                vscode.window.showTextDocument(textDocument, 1, false)
+            });
+        }
+    ));
 }
 
 function openNote(id: any, manager: NotesManager) {

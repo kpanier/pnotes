@@ -8,7 +8,6 @@ export class Note {
     public localFilePath: string;
     public history: NoteDiff[] = [];
     public contentHashCode: string;
-    public note: boolean = true;
     public showHistory: boolean = false;
 }
 
@@ -21,6 +20,5 @@ export class NoteDiff {
 
     public diff: any;
     public creationDate: Date;
-    public note: boolean = false;
     public parent: Note;
 }

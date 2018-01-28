@@ -16,7 +16,8 @@ export class NotesProvider implements TreeDataProvider<Note | NoteDiff> {
     }
 
     getTreeItem(element: Note | NoteDiff): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        if (!element.note) {
+        let type: any = element;
+        if (type.diff) {
             return new NoteDiffTreeItem(element as NoteDiff);
         }
         return new NoteTreeItem(element as Note);
