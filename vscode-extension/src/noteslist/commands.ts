@@ -1,9 +1,12 @@
 import * as vscode from 'vscode';
 import { QuickPickItem, window } from 'vscode';
-import { Note } from '../core/model';
+import { Note, NoteDiff } from '../core/model';
 import { NotesManager } from '../core/NotesManager';
 
-export function registerCommands(context: vscode.ExtensionContext, manager: NotesManager) {
+let DiffMatch = require('diff-match-patch');
+let df = new DiffMatch();
+
+export function registerCommands(context: vscode.ExtensionContext, manager: NotesManager, noteEventEmitter: vscode.EventEmitter<Note | null>) {
 
     context.subscriptions.push(vscode.commands.registerCommand('pnote.openNote', (id: any) => {
         if (id) {
@@ -33,11 +36,35 @@ export function registerCommands(context: vscode.ExtensionContext, manager: Note
     context.subscriptions.push(vscode.commands.registerCommand('pnote.deleteNote',
         note => { vscode.window.showInformationMessage("Delete") }
     ));
+    context.subscriptions.push(vscode.commands.registerCommand('pnote.showHistory',
+        note => {
+            note.showHistory = true;
+            noteEventEmitter.fire();
+        }
+    ));
     context.subscriptions.push(vscode.commands.registerCommand('pnote.syncNote',
         () => {
             manager.getNoteListRefreshed();
         }
     ));
+    context.subscriptions.push(vscode.commands.registerCommand('pnote.openNoteHistory', (diff: NoteDiff) => {
+        let content: string = '';
+        let foundLast: boolean = false;
+        diff.parent.history.forEach(e => {
+            if (!foundLast) {
+                console.log(diff.creationDate)
+                if (e.creationDate == diff.creationDate) {
+                    foundLast = true;
+                }
+                content = df.patch_apply(diff.diff, content)[0];
+            }
+        });
+        console.log('finaly: ' + content);
+        vscode.workspace.openTextDocument({ content: content }).then(textDocument => {
+            console.log("openeing for: " + content);
+            vscode.window.showTextDocument(textDocument, 1, false)
+        });
+    }));
 }
 
 function openNote(id: any, manager: NotesManager) {
@@ -48,7 +75,6 @@ function openNote(id: any, manager: NotesManager) {
         });
     });
 }
-
 
 class NotePickItem implements QuickPickItem {
 

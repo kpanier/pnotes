@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
     let provider = new NotesProvider(manager);
     manager.eventListener = provider.noteEventEmitter;
     vscode.window.registerTreeDataProvider('pnote', provider);
-    registerCommands(context, manager);
+    registerCommands(context, manager, provider.noteEventEmitter);
 }
 
 // this method is called when your extension is deactivated

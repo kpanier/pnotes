@@ -1,4 +1,4 @@
-import { Note } from './model';
+import { Note, NoteDiff } from './model';
 import * as httpm from 'typed-rest-client/HttpClient';
 import * as ifm from 'typed-rest-client/Interfaces';
 import { request } from 'http';
@@ -67,6 +67,23 @@ export class NotesServiceClient {
             })
         });
     }
+
+    async getNoteHistory(id: any): Promise<NoteDiff[]> {
+        return window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Load note' }, async p => {
+            await this.checkToken(p);
+            p.report({ message: 'Loading note history from remote' });
+            return await this.httpCl.get(this.getNotesBaseURL() + "/" + id + "/history", this.createHeaders()).then(async r => {
+                if (r.message.statusCode == 403) {
+                    await this.reciveNewToken();
+                    return this.getNoteHistory(id);
+                }
+                else {
+                    return JSON.parse(await r.readBody()) as NoteDiff[];
+                }
+            });
+        });
+    }
+
 
     async updateNote(note: Note) {
         window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Update note' }, async p => {

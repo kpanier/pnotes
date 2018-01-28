@@ -40,7 +40,11 @@
       },
       {
         "command": "pnote.deleteNote",
-        "title": "Delete Perosnal note"
+        "title": "Delete Personal note"
+      },
+      {
+        "command": "pnote.showHistory",
+        "title": "Show history"
       },
       {
         "command": "pnote.syncNote",
@@ -67,6 +71,10 @@
       "view/item/context": [
         {
           "command": "pnote.deleteNote",
+          "when": "view == pnote"
+        },
+        {
+          "command": "pnote.showHistory",
           "when": "view == pnote"
         }
       ]
@@ -132,6 +140,7 @@
     "@types/mocha": "^2.2.42"
   },
   "dependencies": {
+    "diff-match-patch": "^1.0.0",
     "ts-md5": "^1.2.2",
     "typed-rest-client": "^0.15.1"
   }

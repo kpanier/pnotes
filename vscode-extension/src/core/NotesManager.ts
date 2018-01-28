@@ -1,8 +1,8 @@
 import { NotesServiceClient } from './NotesServiceClient';
-import { Note } from './model';
+import { Note, NoteDiff } from './model';
 import { Md5 } from 'ts-md5/dist/md5';
 import { configure } from 'vscode/lib/testrunner';
-import * as vscode from 'vscode'
+import * as vscode from 'vscode';
 
 export class NotesManager {
 
@@ -71,6 +71,10 @@ export class NotesManager {
 
     getNote(id: any): Promise<Note> {
         return this.service.getNote(id);
+    }
+
+    async getNoteHistory(note: Note): Promise<NoteDiff[]> {
+        return await this.service.getNoteHistory(note._id);
     }
 
     getNotePath(name: string): Promise<string> {
