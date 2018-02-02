@@ -12,7 +12,7 @@ export class NotesServiceClient {
     token: string;
 
     constructor() {
-        if (vscode.workspace.getConfiguration('pnote').get('proxyurl')) {
+        if (vscode.workspace.getConfiguration('pnote').get('proxyurl') !== 'http://proxy' ) {
             let proxyCfg: ifm.IProxyConfiguration = {
                 proxyUrl: vscode.workspace.getConfiguration('pnote').get('proxyurl'),
                 proxyUsername: vscode.workspace.getConfiguration('pnote').get('proxyusername'),
