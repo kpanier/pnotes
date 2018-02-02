@@ -1,7 +1,6 @@
 import { NotesServiceClient } from './NotesServiceClient';
 import { Note, NoteDiff } from './model';
 import { Md5 } from 'ts-md5/dist/md5';
-import { configure } from 'vscode/lib/testrunner';
 import * as vscode from 'vscode';
 
 export class NotesManager {
@@ -11,7 +10,7 @@ export class NotesManager {
     eventListener: vscode.EventEmitter<Note>;
 
     fs = require('fs');
-    notesHome = process.env['HOME'] + '/.enc-notes/';
+    notesHome = process.env['HOME'] + '/.enc-notes-dev/';
     noteIndex = this.notesHome + 'note.index';
 
     constructor() {
