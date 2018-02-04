@@ -33,7 +33,7 @@ The usage of the app is between a personal note and a personal wiki.
 
 Connect: 
 
-mongo  --host localhost --port 27037 -u dbuser -p dbpassword-enc notes-db
+mongo  --host localhost --port 27037 -u dbuser -p dbpassword notes-db
 
 Show Collections:
 

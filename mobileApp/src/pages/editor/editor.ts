@@ -22,7 +22,7 @@ export class Editor implements OnInit {
     if (this.aNote._id) {
       console.log("Try to load: " + this.aNote);
       this.state = 'Loading...';
-      this.notesService.getNote(this.aNote._id).then(n => {
+      this.notesService.getNote(this.aNote).then(n => {
         this.aNote = n;
         this.state = 'Loaded';
       }).catch((error) => this.navCtrl.push(HomePage));
@@ -36,7 +36,7 @@ export class Editor implements OnInit {
         if (r.statusCode == 200) {
           this.state = 'Saving note done.';
         }
-        this.notesService.getNote(this.aNote._id).then(n => {
+        this.notesService.getNote(this.aNote).then(n => {
           this.aNote = n;
           this.state = 'Synced.';
         });
@@ -48,7 +48,7 @@ export class Editor implements OnInit {
         if (r.statusCode == 200) {
           this.state = 'Creating note done.';
         }
-        this.notesService.getNote(r).then(n => {
+        this.notesService.getNoteById(r).then(n => {
           this.aNote = n;
           this.state = 'Synced.'
         });

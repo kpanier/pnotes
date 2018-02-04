@@ -17,7 +17,14 @@ export class NotesService {
     });
   }
 
-  getNote(id: any): Promise<Note> {
+  getNote(note: Note): Promise<Note> {
+    console.log('Request for ' + note._id);
+    return this.http.get(this.baseURL + note._links.self.href, this.createHeader()).toPromise().then(response => {
+      return response.json() as Note;
+    });
+  }
+
+  getNoteById(id: any): Promise<Note> {
     console.log('Request for ' + id);
     return this.http.get(this.baseURL + '/notes/' + id, this.createHeader()).toPromise().then(response => {
       return response.json() as Note;
@@ -25,8 +32,8 @@ export class NotesService {
   }
 
   updateNote(note: Note): Promise<any> {
-    console.log(this.baseURL + '/notes' + note._id);
-    return this.http.put(this.baseURL + '/notes/' + note._id, note, this.createHeader()).toPromise().catch(this.handleError);
+    console.log(this.baseURL + note._links.self.href);
+    return this.http.put(this.baseURL + note._links.self.href, note, this.createHeader()).toPromise().catch(this.handleError);
   }
 
   addNote(note: Note): Promise<any> {
@@ -36,7 +43,7 @@ export class NotesService {
   }
 
   remove(note: Note): Promise<any> {
-    return this.http.delete(this.baseURL + '/notes/' + note._id, this.createHeader()).toPromise().catch(this.handleError);
+    return this.http.delete(this.baseURL + note._links.delete.href, this.createHeader()).toPromise().catch(this.handleError);
   }
 
   private handleError(error: any): Promise<any> {

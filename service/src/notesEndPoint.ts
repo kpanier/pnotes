@@ -1,9 +1,12 @@
 import express = require('express');
 import { NotesManager } from './NotesManager';
 import { getSecret } from './Util';
+import { request } from 'http';
 import jwt = require('jsonwebtoken');
 
 export class NotesEndPointBuilder {
+
+    hal = require('hal');
 
     createNotesEndpoint(notesManager: NotesManager): any {
         let notesAPI = express.Router();
@@ -29,7 +32,9 @@ export class NotesEndPointBuilder {
     createPutNoteEndpoint(notesManager: NotesManager): any {
         return (request, response) => {
             console.log('Store  ' + request.params.id);
-            notesManager.update(request.params.id, request.body);
+            let note = request.body;
+            delete note._links;
+            notesManager.update(request.params.id, note);
             response.status(200).send();
         };
     }
@@ -42,7 +47,10 @@ export class NotesEndPointBuilder {
 
     createGetNotesDetailEndpoint(notesManager: NotesManager): any {
         return (request, response) => {
-            notesManager.getNoteWithId(request.params.id).then(r => response.status(200).send(r));
+            notesManager.getNoteWithId(request.params.id).then(r => {
+                let resource = new this.hal.Resource(r, request.originalUrl);
+                response.status(200).send(resource);
+            });
         }
     }
 
@@ -54,7 +62,15 @@ export class NotesEndPointBuilder {
 
     createGetNotesEndpoint(notesManager: NotesManager): any {
         return (request, response) => {
-            notesManager.getAllNotes().then(r => response.status(200).send(r));
+            let result: any[] = [];
+            notesManager.getAllNotes().then(r => {
+                r.forEach(n => {
+                    let resource = new this.hal.Resource(n, request.originalUrl + '/' + n._id);
+                    resource.link('delete', request.originalUrl + '/' + n._id)
+                    result.push(resource);
+                })
+                response.status(200).send(result);
+            });
         }
     }
 
