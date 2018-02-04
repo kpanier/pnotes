@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Editor: {{aNote.name}}</ion-title>
+    <ion-title><ion-input [(ngModel)]="aNote.name"></ion-input></ion-title>
   </ion-navbar>
   <button ion-button (click)="save()"> Save </button>
   <button ion-button (click)="abort()"> Cancel </button>
