@@ -7,7 +7,7 @@
     "test": "karma start karma.conf.js --reporters kjhtml",
     "tsc": "tsc --watch",
     "build": "tsc",
-    "serve": "nodemon -v dist/main.js"
+    "serve": "nodemon dist/main.js"
   },
   "author": "",
   "license": "MIT",
