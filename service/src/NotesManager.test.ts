@@ -1,5 +1,6 @@
-import { NotesManager } from "./NotesManager";
-import { isUndefined } from "util";
+import * as assert from 'assert';
+import 'mocha';
+import { NotesManager } from '../src/NotesManager';
 
 class NoteRevistionMongoDB {
 
@@ -39,28 +40,26 @@ class Collection {
 
 }
 
-describe('NotesManager', () => {
+suite('NotesManager Tests', () => {
 
-    it('test read note revision', () => {
+    test('test read note revision', () => {
         let nm = new NotesManager(new NoteRevistionMongoDB({ notes: '2' }));
-        expect(nm).toBeTruthy();
-        nm.getNotesRevision().then(r => expect(r).toEqual({ notes: '2' }));
+        nm.getNotesRevision().then(r => assert.deepEqual(r, { notes: '2' }));
+
     });
 
-    it('test new revision on undifined', async () => {
+    test('test new revision on undifined', async () => {
         let db = new NoteRevistionMongoDB(null);
         let nm = new NotesManager(db);
-        expect(nm).toBeTruthy();
         await nm.increaseNoteRevision();
-        expect(db.newValue).toEqual({ name: 'notes', revision: 0 });
+        assert.deepEqual(db.newValue, { name: 'notes', revision: 0 })
     });
 
-    it('test new revision on exisitng vlaue', async () => {
+    test('test new revision on exisitng vlaue', async () => {
         let db = new NoteRevistionMongoDB({ name: 'notes', revision: 2 });
         let nm = new NotesManager(db);
-        expect(nm).toBeTruthy();
         await nm.increaseNoteRevision();
-        expect(db.newValue).toEqual({ name: 'notes', revision: 3 });
+        assert.deepEqual(db.newValue, { name: 'notes', revision: 3 });
     });
 
-});
+})

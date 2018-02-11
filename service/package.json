@@ -4,7 +4,7 @@
   "description": "Notes API",
   "main": "main.js",
   "scripts": {
-    "test": "karma start karma.conf.js --reporters kjhtml",
+    "test": "mocha -u tdd -r ts-node/register src/**/*.test.ts",
     "tsc": "tsc --watch",
     "build": "tsc",
     "serve": "nodemon dist/main.js"
@@ -12,22 +12,12 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/jasmine": "^2.8.2",
+    "@types/mocha": "^2.2.48",
     "@types/node": "^8.0.53",
-    "jasmine-core": "^2.8.0",
-    "jasmine-ts": "^0.2.1",
-    "karma": "^1.7.1",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-jasmine": "^1.1.1",
-    "karma-jasmine-html-reporter": "^0.2.2",
-    "karma-phantomjs-launcher": "^1.0.4",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-typescript": "^3.0.8",
-    "karma-typescript-es6-transform": "^1.0.2",
-    "karma-webpack": "^2.0.6",
-    "ts-loader": "^3.2.0",
-    "typescript": "~2.6.0",
-    "webpack": "^3.10.0"
+    "mocha": "^5.0.0",
+    "ts-node": "^4.1.0",
+    "typemoq": "^2.1.0",
+    "typescript": "~2.7.1"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
