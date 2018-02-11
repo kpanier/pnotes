@@ -10,7 +10,7 @@ export class NotesManager {
     df = new this.DiffMatch();
 
     getAllNotes(): Promise<Note[]> {
-        return this.mongodb.collection('notes').find({}, { history: 0, content: 0 }).toArray();
+        return this.mongodb.collection('notes').find({}, { history: 0, content: 0 }).sort({name: 1}).toArray();
     }
 
     getNoteWithId(id: string): Promise<Note> {
