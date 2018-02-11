@@ -2,40 +2,25 @@ import * as assert from 'assert';
 import 'mocha';
 import { NotesManager } from '../src/NotesManager';
 
-class NoteRevistionMongoDB {
-
-    rev: any;
-    newValue: any;
-    coll = new Collection(this);
-
-    constructor(revision: any) {
-        this.rev = revision;
-    }
-
-    collection(name): any {
-        return this.coll;
-    }
-
-}
-
 class Collection {
 
-    myDb: any
+    myColl: any
+    newValue: any
 
-    constructor(db: any) {
-        this.myDb = db;
+    constructor(collContent: any) {
+        this.myColl = collContent;
     }
 
     findOne(q: any): Promise<any> {
-        return Promise.resolve(this.myDb.rev);
+        return Promise.resolve(this.myColl);
     }
 
     insert(value) {
-        this.myDb.newValue = value;
+        this.newValue = value;
     }
 
     update(query: any, value: any) {
-        this.myDb.newValue = value;
+        this.newValue = value;
     }
 
 }
@@ -43,23 +28,23 @@ class Collection {
 suite('NotesManager Tests', () => {
 
     test('test read note revision', () => {
-        let nm = new NotesManager(new NoteRevistionMongoDB({ notes: '2' }));
+        let db = { collection(name) { return new Collection({ notes: '2' }) } };
+        let nm = new NotesManager(db);
         nm.getNotesRevision().then(r => assert.deepEqual(r, { notes: '2' }));
-
     });
 
     test('test new revision on undifined', async () => {
-        let db = new NoteRevistionMongoDB(null);
-        let nm = new NotesManager(db);
+        let coll = new Collection(null);
+        let nm = new NotesManager({ collection(name) { return coll } });
         await nm.increaseNoteRevision();
-        assert.deepEqual(db.newValue, { name: 'notes', revision: 0 })
+        assert.deepEqual(coll.newValue, { name: 'notes', revision: 0 })
     });
 
     test('test new revision on exisitng vlaue', async () => {
-        let db = new NoteRevistionMongoDB({ name: 'notes', revision: 2 });
-        let nm = new NotesManager(db);
+        let coll = new Collection({ name: 'notes', revision: 2 });
+        let nm = new NotesManager({ collection(name) { return coll } });
         await nm.increaseNoteRevision();
-        assert.deepEqual(db.newValue, { name: 'notes', revision: 3 });
+        assert.deepEqual(coll.newValue, { name: 'notes', revision: 3 });
     });
 
 })
