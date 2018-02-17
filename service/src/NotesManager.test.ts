@@ -40,7 +40,7 @@ suite('NotesManager Tests', () => {
         assert.deepEqual(coll.newValue, { name: 'notes', revision: 0 })
     });
 
-    test('test new revision on exisitng vlaue', async () => {
+    test('test new revision on exisitng value', async () => {
         let coll = new Collection({ name: 'notes', revision: 2 });
         let nm = new NotesManager({ collection(name) { return coll } });
         await nm.increaseNoteRevision();

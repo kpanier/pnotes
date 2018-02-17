@@ -4,10 +4,24 @@
   "description": "Notes API",
   "main": "main.js",
   "scripts": {
-    "test": "mocha -u tdd -r ts-node/register src/**/*.test.ts",
+    "test": "nyc mocha -u tdd -r ts-node/register src/**/*.test.ts",
     "tsc": "tsc --watch",
     "build": "tsc",
     "serve": "nodemon dist/main.js"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "**/*.js"
+    ],
+    "reporter": [
+      "text", "html"
+    ],
+    "all": true  
   },
   "author": "",
   "license": "MIT",
@@ -15,6 +29,7 @@
     "@types/mocha": "^2.2.48",
     "@types/node": "^8.0.53",
     "mocha": "^5.0.0",
+    "nyc": "^11.4.1",
     "ts-node": "^4.1.0",
     "typemoq": "^2.1.0",
     "typescript": "~2.7.1"
