@@ -1,7 +1,5 @@
 language: node_js
 jobs:
   include:
-    - stage: build
-      script: npm --prefix service install
-    - stage: test
-      script: npm --prefix service test
+    - stage: service
+      script: npm --prefix service install test
