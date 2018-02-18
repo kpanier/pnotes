@@ -27,7 +27,7 @@ export class NotesManager {
         }
         console.log("New with: " + note.content);
         this.updateNoteHistoryState(note, '');
-        let result = this.mongodb.collection('notes').insert(note);
+        let result = this.mongodb.collection('notes').insertOne(note);
         this.increaseNoteRevision();
         return result;
     }
