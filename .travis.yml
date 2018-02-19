@@ -1,6 +1,15 @@
 language: node_js
 node_js:
   - "8"
+before_install:
+  - if [ $TRAVIS_OS_NAME == "linux" ]; then
+      export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:99.0;
+      sh -e /etc/init.d/xvfb start;
+      sleep 3;
+    fi
 jobs:
   include:
-    - script: npm --prefix service install && npm --prefix service test
+    - stage: service
+      script: npm --prefix service install && npm --prefix service test
+    - stage: vscode-extension
+      script: npm --prefix vscode-extension install && npm --prefix vscode-extension test
