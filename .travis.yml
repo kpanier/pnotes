@@ -1,4 +1,6 @@
 language: node_js
+node_js:
+  - "8"
 jobs:
   include:
     - script: npm --prefix service install && npm --prefix service test
