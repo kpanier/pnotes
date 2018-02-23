@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 
-import * as vscode from 'vscode';
 import * as TypeMoq from "typemoq";
 import { NotesServiceClient } from '../core/NotesServiceClient';
 import { HttpClient, HttpClientResponse } from 'typed-rest-client/HttpClient';
