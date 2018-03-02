@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { NotesService } from '../../app/core/notesService';
 import { ListPage } from '../list/list';
-import { Storage } from '@ionic/storage';
+import { INotesState, Actions, ILogin } from '../../app/core/store';
+import { select, NgRedux } from '@angular-redux/store';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'page-home',
@@ -10,28 +11,39 @@ import { Storage } from '@ionic/storage';
 })
 export class HomePage {
 
+  @select() username$: Observable<string>;
   username: string;
   password: string;
   message: string;
+  @select() pnoteUrl$: Observable<string>;
   pnoteUrl: string;
+  @select() login$: Observable<ILogin>;
 
-  constructor(public navCtrl: NavController, private notesService: NotesService, private storage: Storage) {
-    storage.get("url").then(v => this.pnoteUrl = v)
-    storage.get("username").then(v => this.username = v);
+  constructor(public navCtrl: NavController, private ngRedux: NgRedux<INotesState>) {
+    this.pnoteUrl$.subscribe(s => this.pnoteUrl = s);
+    this.username$.subscribe(s => this.username = s);
+    this.login$.subscribe(b => this.handleLoginState(b));
+    ngRedux.dispatch({ type: Actions.INIT_APP });
   }
 
-  public login() {
-    this.notesService.baseURL = this.pnoteUrl;
-    this.notesService.login(this.username, this.password).then(status => {
-      if (status = 200) {
-        this.storage.set("url", this.pnoteUrl);
-        this.storage.set("username", this.username);
+  public handleLoginState(login: ILogin) {
+    if (login.login) {
+      if (login.loginSuccess) {
         this.navCtrl.setRoot(ListPage);
       }
       else {
-        this.message = 'Login failed.'
+        this.message = 'Login failed.';
       }
-    }).catch(err => this.message = err);
+    }
+  }
+
+  public login() {
+    this.ngRedux.dispatch({
+      type: Actions.LOGIN,
+      username: this.username,
+      password: this.password,
+      pnoteUrl: this.pnoteUrl
+    });
   }
 
 }

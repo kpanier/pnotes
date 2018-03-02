@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { Note } from './model';
-import { Storage } from '@ionic/storage';
+import { Actions } from './store';
 
 @Injectable()
 export class NotesService {
@@ -9,7 +9,24 @@ export class NotesService {
   token: string;
   baseURL: string;
 
-  constructor(private http: Http, private storage: Storage) { }
+  constructor(private http: Http) { }
+
+  middleware = store => next => action => {
+    switch (action.type) {
+      case Actions.LOGIN:
+        this.baseURL = action.pnoteUrl
+        this.login(action.username, action.password).then(status => {
+          if (status = 200) {
+            return next({ type: Actions.LOGIN_SUCCESS })
+          }
+          else {
+            return next({ type: Actions.LOGIN_FAILED })
+          }
+        }).catch(err => next({ type: Actions.LOGIN_FAILED, message: err }));
+        return next(action)
+    }
+    return next(action);
+  }
 
   getNoteList(): Promise<Note[]> {
     return this.http.get(this.baseURL + '/notes', this.createHeader()).toPromise().then(response => {
@@ -62,7 +79,6 @@ export class NotesService {
     let login = { userName: username, password: password };
     return this.http.post(this.baseURL + '/login', login).toPromise().then(response => {
       if (response.status == 200) {
-        console.log("Login successfully");
         this.token = response.json().token;
       }
       return response.status;

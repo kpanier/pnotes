@@ -14,6 +14,9 @@ import { Editor } from '../pages/editor/editor';
 import { ContenteditableDirective } from 'ng-contenteditable';
 import { AceEditorDirective } from 'ng2-ace-editor';
 import { IonicStorageModule } from '@ionic/storage';
+import { NgReduxModule, NgRedux } from '@angular-redux/store';
+import { INotesState, rootReducer, INIT_STATE } from './core/store';
+import { LocalStoreService } from './core/localStoreService';
 
 @NgModule({
   declarations: [
@@ -27,6 +30,7 @@ import { IonicStorageModule } from '@ionic/storage';
   imports: [
     BrowserModule,
     HttpModule,
+    NgReduxModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()
   ],
@@ -41,7 +45,13 @@ import { IonicStorageModule } from '@ionic/storage';
     StatusBar,
     SplashScreen,
     NotesService,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    LocalStoreService,
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(ngRedux: NgRedux<INotesState>, notesService: NotesService, localStoreService: LocalStoreService) {
+    const middleware = [localStoreService.middleware, notesService.middleware];
+    ngRedux.configureStore(rootReducer, INIT_STATE, middleware);
+  }
+}
