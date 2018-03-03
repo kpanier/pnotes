@@ -13,3 +13,5 @@ jobs:
       script: npm --prefix service install && npm --prefix service test
     - stage: vscode-extension
       script: npm --prefix vscode-extension install && npm --prefix vscode-extension test
+    - stage: mobile-app
+      script: npm --prefix mobileApp install && npm --prefix mobileApp run test-ci
