@@ -9,18 +9,24 @@ export class LocalStoreService {
 
     middleware = store => next => action => {
         switch (action.type) {
-            case Actions.INIT_APP:
-                return this.storage.get("url").then(url => {
-                    return this.storage.get("username").then(uname => {
-                        return next({ type: Actions.LAST_SESSION_LOADED, nextState: { pnoteUrl: url, username: uname } });
-                    });
-                })
-            case Actions.LOGIN:
-                this.storage.set("url", action.pnoteUrl);
-                this.storage.set("username", action.username);
-                return next(action)
+            case Actions.INIT_APP: return this.initApp(next);
+            case Actions.LOGIN: return this.login(next, action);
         }
         return next(action);
+    }
+
+    initApp(next) {
+        return this.storage.get("url").then(url => {
+            return this.storage.get("username").then(uname => {
+                return next({ type: Actions.LAST_SESSION_LOADED, nextState: { pnoteUrl: url, username: uname } });
+            });
+        })
+    }
+
+    login(next, action) {
+        this.storage.set("url", action.pnoteUrl);
+        this.storage.set("username", action.username);
+        return next(action)
     }
 
 }
