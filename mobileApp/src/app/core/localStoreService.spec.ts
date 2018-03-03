@@ -15,7 +15,6 @@ describe('local Store service tests', () => {
   it('Init App loads values from store', () => {
     storage.setup(st => { st.get('url') }).returns(() => Promise.resolve('http://bar.foo'));
     storage.setup(st => { st.get('username') }).returns(() => Promise.resolve('root'));
-    
 
     service.initApp(next).then(result => {
       expect(result.type).toBe(Actions.LAST_SESSION_LOADED)

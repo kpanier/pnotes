@@ -13,19 +13,22 @@ export class NotesService {
 
   middleware = store => next => action => {
     switch (action.type) {
-      case Actions.LOGIN:
-        this.baseURL = action.pnoteUrl
-        this.login(action.username, action.password).then(status => {
-          if (status = 200) {
-            return next({ type: Actions.LOGIN_SUCCESS })
-          }
-          else {
-            return next({ type: Actions.LOGIN_FAILED })
-          }
-        }).catch(err => next({ type: Actions.LOGIN_FAILED, message: err }));
-        return next(action)
+      case Actions.LOGIN: return this.login(next, action);
     }
     return next(action);
+  }
+
+  login(next, action) {
+    this.baseURL = action.pnoteUrl
+    this.loginOnServer(action.username, action.password).then(status => {
+      if (status = 200) {
+        return next({ type: Actions.LOGIN_SUCCESS })
+      }
+      else {
+        return next({ type: Actions.LOGIN_FAILED })
+      }
+    }).catch(err => next({ type: Actions.LOGIN_FAILED, message: err }));
+    return next(action)
   }
 
   getNoteList(): Promise<Note[]> {
@@ -75,7 +78,7 @@ export class NotesService {
     return new RequestOptions({ headers: headers });
   }
 
-  login(username: string, password: string): Promise<number> {
+  loginOnServer(username: string, password: string): Promise<number> {
     let login = { userName: username, password: password };
     return this.http.post(this.baseURL + '/login', login).toPromise().then(response => {
       if (response.status == 200) {
