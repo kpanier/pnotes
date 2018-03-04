@@ -15,6 +15,7 @@ export class NotesService {
   middleware = store => next => action => {
     switch (action.type) {
       case Actions.LOGIN: return this.login(next, action);
+      case Actions.LOAD_NOTES: return this.loadAllNotes(next);
     }
     return next(action);
   }
@@ -29,6 +30,10 @@ export class NotesService {
         return next({ type: Actions.LOGIN_FAILED })
       }
     }).catch(err => next({ type: Actions.LOGIN_FAILED, message: err }));
+  }
+
+  loadAllNotes(next) {
+    return this.getNoteList().then(notes => next({type: Actions.NOTES_LOADED, payload: notes})).catch(next({type: Actions.SESSION_OUTDATED}))
   }
 
   getNoteList(): Promise<Note[]> {

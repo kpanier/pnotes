@@ -18,9 +18,10 @@ export enum Actions {
     INIT_APP = 'INIT_APP',
     LAST_SESSION_LOADED = 'LAST_SESSION_LOADED',
     LOGIN_SUCCESS = 'LOGIN_SUCCESS',
-    LOGIN_FAILED = 'LOGIN_FAILED'
+    LOGIN_FAILED = 'LOGIN_FAILED',
+    NOTES_LOADED = 'NOTES_LOADED',
+    SESSION_OUTDATED = 'SESSION_OUTDATED'
 }
-
 
 export const INIT_STATE: INotesState = {
     notes: [],
@@ -37,6 +38,9 @@ export function rootReducer(state: INotesState, action): INotesState {
             return { notes: state.notes, pnoteUrl: state.pnoteUrl, username: state.username, login: { login: true, loginSuccess: true } };
         case Actions.LOGIN_FAILED:
             return { notes: state.notes, pnoteUrl: state.pnoteUrl, username: state.username, login: { login: true, loginSuccess: false } };
+        case Actions.NOTES_LOADED:
+            return { notes: action.payload, pnoteUrl: state.pnoteUrl, username: state.username, login: state.login };
+        case Actions.SESSION_OUTDATED: return INIT_STATE;
     }
     return state;
 }

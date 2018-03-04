@@ -1,4 +1,5 @@
 import { rootReducer, INIT_STATE, Actions, ILogin } from './store';
+import { Note } from './model';
 describe('Store reducer tests',() => {
 
     it('Return unmodified state on unknown action',() => {
@@ -45,6 +46,28 @@ describe('Store reducer tests',() => {
 
         expect(state.login.login).toBeTruthy();
         expect(state.login.loginSuccess).toBeFalsy()        
+    })
+
+    it('Notes loaded', () => {
+        let action = {
+            type: Actions.NOTES_LOADED,
+            payload: [new Note()]
+        }
+
+        let state = rootReducer(INIT_STATE, action);
+
+        expect(state.notes).toBeTruthy();
+        expect(state.notes.length).toBe(1)        
+    })
+
+    it('Session outdated', () => {
+        let action = {
+            type: Actions.SESSION_OUTDATED
+        }
+
+        let state = rootReducer(INIT_STATE, action);
+
+        expect(state).toBe(INIT_STATE);
     })
 
 })

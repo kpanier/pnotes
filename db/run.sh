@@ -2,7 +2,7 @@
 set -m
 
 mongodb_cmd="mongod --storageEngine $STORAGE_ENGINE"
-cmd="$mongodb_cmd --bind_ip=0.0.0.0 --master"
+cmd="$mongodb_cmd --httpinterface --rest --master"
 if [ "$AUTH" == "yes" ]; then
     cmd="$cmd --auth"
 fi

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-import { NotesService } from '../../app/core/notesService';
+import { NavController } from 'ionic-angular';
 import { Editor } from '../editor/editor';
 import { Note } from '../../app/core/model';
-import { HomePage } from '../home/home';
+import { NgRedux } from '@angular-redux/store';
+import { INotesState, Actions } from '../../app/core/store';
 
 
 @Component({
@@ -11,26 +11,27 @@ import { HomePage } from '../home/home';
   templateUrl: 'list.html'
 })
 export class ListPage {
+
   icons: string[];
   items: ListItem[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private notesService: NotesService) {
+  constructor(public navCtrl: NavController, private ngRedux: NgRedux<INotesState>) {
   }
 
   ionViewWillEnter() {
-    this.reloadNotesFromService();
+    this.ngRedux.dispatch({ type: Actions.LOAD_NOTES });
+    this.ngRedux.subscribe(() => this.reloadNotesFromStore());
   }
 
-  reloadNotesFromService() {
+  reloadNotesFromStore() {
     this.items = [];
-    this.notesService.getNoteList().then(notes => notes.forEach(note => {
+    this.ngRedux.getState().notes.forEach(note => {
       this.items.push({
         title: note.name,
         note: note,
         icon: 'paper-plane'
       });
-    }
-    )).catch((error)=> this.navCtrl.push(HomePage));
+    });
   }
 
   itemTapped(item: ListItem) {
@@ -41,8 +42,9 @@ export class ListPage {
 
   remove(item: ListItem) {
     console.log('Remove: ' + item.title);
-    this.notesService.remove(item.note).catch((error)=> this.navCtrl.push(HomePage));
-    this.items.slice(this.items.indexOf(item),1);
+    //TODO
+    //this.notesService.remove(item.note).catch((error) => this.navCtrl.push(HomePage));
+    this.items.slice(this.items.indexOf(item), 1);
   }
 
   newNote() {
