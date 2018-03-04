@@ -19,12 +19,14 @@ export class HomePage {
   pnoteUrl: string;
   @select() login$: Observable<ILogin>;
 
-  constructor(public navCtrl: NavController, private ngRedux: NgRedux<INotesState>) {
+  constructor(public navCtrl: NavController, private ngRedux: NgRedux<INotesState>) {}
+
+  ionViewWillEnter() {
     this.pnoteUrl$.subscribe(s => this.pnoteUrl = s);
     this.username$.subscribe(s => this.username = s);
     this.login$.subscribe(b => this.handleLoginState(b));
-    ngRedux.dispatch({ type: Actions.INIT_APP });
-  }
+    this.ngRedux.dispatch({ type: Actions.INIT_APP });
+}
 
   public handleLoginState(login: ILogin) {
     if (login.login) {
