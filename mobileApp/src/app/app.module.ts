@@ -9,7 +9,7 @@ import { ListPage } from '../pages/list/list';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { NotesService } from './core/notesService';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { Editor } from '../pages/editor/editor';
 import { ContenteditableDirective } from 'ng-contenteditable';
 import { AceEditorDirective } from 'ng2-ace-editor';
@@ -29,7 +29,7 @@ import { LocalStoreService } from './core/localStoreService';
   ],
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     NgReduxModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()

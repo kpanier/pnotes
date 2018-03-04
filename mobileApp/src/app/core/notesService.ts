@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
+import { retry, catchError } from 'rxjs/operators';
 import { Note } from './model';
 import { Actions } from './store';
 
@@ -9,7 +10,7 @@ export class NotesService {
   token: string;
   baseURL: string;
 
-  constructor(private http: Http) { }
+  constructor(private httpClient: HttpClient) { }
 
   middleware = store => next => action => {
     switch (action.type) {
@@ -18,52 +19,45 @@ export class NotesService {
     return next(action);
   }
 
-  login(next, action) {
+ login(next, action) {
     this.baseURL = action.pnoteUrl
-    this.loginOnServer(action.username, action.password).then(status => {
-      if (status = 200) {
+    return this.loginOnServer(action.username, action.password).then(status => {
+      if (status == 200) {
         return next({ type: Actions.LOGIN_SUCCESS })
       }
       else {
         return next({ type: Actions.LOGIN_FAILED })
       }
     }).catch(err => next({ type: Actions.LOGIN_FAILED, message: err }));
-    return next(action)
   }
 
   getNoteList(): Promise<Note[]> {
-    return this.http.get(this.baseURL + '/notes', this.createHeader()).toPromise().then(response => {
-      return response.json() as Note[]
-    });
+    return this.httpClient.get<Note[]>(this.baseURL + '/notes', { headers: this.createHeader() }).pipe(retry(3), catchError(this.handleError)).toPromise();
   }
 
   getNote(note: Note): Promise<Note> {
     console.log('Request for ' + note._id);
-    return this.http.get(this.baseURL + note._links.self.href, this.createHeader()).toPromise().then(response => {
-      return response.json() as Note;
-    });
+    return this.httpClient.get<Note>(this.baseURL + note._links.self.href, { headers: this.createHeader() }).pipe(retry(3), catchError(this.handleError)).toPromise();
   }
 
   getNoteById(id: any): Promise<Note> {
     console.log('Request for ' + id);
-    return this.http.get(this.baseURL + '/notes/' + id, this.createHeader()).toPromise().then(response => {
-      return response.json() as Note;
-    });
+    return this.httpClient.get(this.baseURL + '/notes/' + id, { headers: this.createHeader() }).pipe(retry(3), catchError(this.handleError)).toPromise();
   }
 
   updateNote(note: Note): Promise<any> {
     console.log(this.baseURL + note._links.self.href);
-    return this.http.put(this.baseURL + note._links.self.href, note, this.createHeader()).toPromise().catch(this.handleError);
+    return this.httpClient.put(this.baseURL + note._links.self.href, note, { headers: this.createHeader(), observe: "response" }).toPromise();
   }
 
   addNote(note: Note): Promise<any> {
-    return this.http.post(this.baseURL + '/notes', note, this.createHeader()).toPromise().then(r => {
-      return r.json().insertedIds[0]
+    return this.httpClient.post<any>(this.baseURL + '/notes', note, { headers: this.createHeader(), observe: "response" }).toPromise().then(r => {
+      return r.body.insertedIds[0]
     }).catch(this.handleError);
   }
 
   remove(note: Note): Promise<any> {
-    return this.http.delete(this.baseURL + note._links.delete.href, this.createHeader()).toPromise().catch(this.handleError);
+    return this.httpClient.delete(this.baseURL + note._links.delete.href, { headers: this.createHeader() }).toPromise().catch(this.handleError);
   }
 
   private handleError(error: any): Promise<any> {
@@ -71,18 +65,18 @@ export class NotesService {
     return Promise.reject(error.message || error)
   }
 
-  createHeader(): RequestOptions {
-    let headers: Headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('x-access-token', this.token);
-    return new RequestOptions({ headers: headers });
+  createHeader() {
+    return {
+      'Content-Type': 'application/json',
+      'x-access-token': this.token
+    }
   }
 
   loginOnServer(username: string, password: string): Promise<number> {
     let login = { userName: username, password: password };
-    return this.http.post(this.baseURL + '/login', login).toPromise().then(response => {
+    return this.httpClient.post<any>(this.baseURL + '/login', login, { observe: 'response' }).toPromise().then(response => {
       if (response.status == 200) {
-        this.token = response.json().token;
+        this.token = response.body.token;
       }
       return response.status;
     });
