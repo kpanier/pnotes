@@ -1,5 +1,4 @@
 import * as assert from 'assert';
-import 'mocha';
 import { UserManager, User } from './UserManager';
 import { getMongoDb } from './mongomock.test';
 

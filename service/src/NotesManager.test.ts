@@ -1,5 +1,4 @@
 import * as assert from 'assert';
-import 'mocha';
 import { NotesManager } from '../src/NotesManager';
 import { Note, NoteDiff } from './model';
 import { getMongoDb } from './mongomock.test';
