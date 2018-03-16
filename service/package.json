@@ -7,7 +7,8 @@
     "test": "nyc mocha -u tdd -r ts-node/register src/**/*.test.ts",
     "tsc": "tsc --watch",
     "build": "tsc",
-    "serve": "nodemon dist/main.js"
+    "serve": "nodemon dist/main.js",
+    "prod": "pm2-runtime  dist/main.js"
   },
   "nyc": {
     "extension": [
@@ -45,6 +46,7 @@
     "mongodb": "^2.2.33",
     "multer": "^1.3.0",
     "nodemon": "^1.11.0",
+    "pm2": "^2.10.1",
     "ts-md5": "^1.2.2"
   }
 }

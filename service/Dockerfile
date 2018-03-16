@@ -13,4 +13,4 @@ RUN npm run-script build
 EXPOSE 3000
 EXPOSE 3443
 
-CMD [ "npm", "run", "serve" ]
+CMD [ "npm", "run", "prod" ]
