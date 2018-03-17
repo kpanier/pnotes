@@ -4,7 +4,7 @@ WORKDIR /usr/src/noteservice
 
 COPY *.json ./
 
-RUN npm install
+RUN npm install --no-optional
 
 COPY src ./src
 
