@@ -50,6 +50,9 @@ export class NotesEndPointBuilder {
             notesManager.getNoteWithId(request.params.id).then(r => {
                 let resource = new this.hal.Resource(r, request.originalUrl);
                 response.status(200).send(resource);
+            }).catch((e) => {
+                console.log(e);
+                response.status(404).send();
             });
         }
     }
