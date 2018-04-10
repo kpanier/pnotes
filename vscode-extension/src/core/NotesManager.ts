@@ -2,6 +2,7 @@ import { NotesServiceClient } from './NotesServiceClient';
 import { Note, NoteDiff } from './model';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as vscode from 'vscode';
+import { configure } from 'vscode/lib/testrunner';
 
 export class NotesManager {
 
@@ -10,7 +11,7 @@ export class NotesManager {
     eventListener: vscode.EventEmitter<Note>;
 
     fs = require('fs');
-    notesHome = process.env['HOME'] + '/.enc-notes-dev/';
+    notesHome = process.env['HOME'] + '/.enc-notes/';
     noteIndex = this.notesHome + 'note.index';
 
     constructor() {
@@ -87,7 +88,10 @@ export class NotesManager {
                     this.eventListener.fire();
                     return this.writeNote(n.name, n.content);
                 }
-            );
+            ).catch((e) => {
+                console.log('Have Error in promise' + e);
+                return Promise.resolve(this.notes.get(name).localFilePath);
+            });
         }
         return Promise.resolve(this.notes.get(name).localFilePath);
     }
@@ -97,7 +101,7 @@ export class NotesManager {
     }
 
     remove(note: Note) {
-        if(note.localFilePath) {
+        if (note.localFilePath) {
             this.fs.unlink(note.localFilePath)
         }
         this.service.remove(note);
@@ -126,7 +130,7 @@ export class NotesManager {
     startNoteUploadWatcher() {
         let processingFiles: string[] = [];
         this.createNotesHome();
-        this.fs.watch(this.notesHome, (event, filename: string) => {
+        this.fs.watch(this.notesHome, async (event, filename: string) => {
             if (filename.endsWith('.md') && event == 'change' && processingFiles.indexOf(filename) == -1) {
                 let noteIndex = this.readNoteIndex();
                 processingFiles.push(filename);
@@ -134,13 +138,23 @@ export class NotesManager {
                 let noteName = filename.substring(0, filename.lastIndexOf('.'));
                 if (vscode.window.state.focused && noteIndex.get(noteName) && Md5.hashStr(newContent) != noteIndex.get(noteName).contentHashCode) {
                     console.log('Real file change detected for ' + filename);
-                    let note = this.service.getNote(noteIndex.get(noteName)._id);
-                    note.then(async n => {
+                    if (!noteIndex.get(noteName)._id) {
+                        let n = new Note();
+                        n.name = noteName;
                         n.content = newContent;
-                        await this.service.updateNote(n);
-                        console.log('Note updated on backend ' + n.name);
+                        await this.service.addNote(n);
+                        console.log('Created existing local note on remote site.');
                         this.eventListener.fire();
-                    });
+                    }
+                    else {
+                        let note = this.service.getNote(noteIndex.get(noteName)._id);
+                        note.then(async n => {
+                            n.content = newContent;
+                            await this.service.updateNote(n);
+                            console.log('Note updated on backend ' + n.name);
+                            this.eventListener.fire();
+                        });
+                    }
                 }
                 processingFiles.splice(processingFiles.indexOf(filename), 1);
             }

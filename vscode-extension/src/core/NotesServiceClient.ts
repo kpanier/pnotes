@@ -57,6 +57,10 @@ export class NotesServiceClient {
             await this.checkToken(p);
             p.report({ message: 'Loading note from remote' });
             return this.httpCl.get(this.getNotesBaseURL() + id, this.createHeaders()).then(async response => {
+                console.log('Remote state: ' + response.message.statusCode);
+                if (response.message.statusCode == 404) {
+                    throw new RangeError('Not found for id: ' + id);
+                }
                 if (response.message.statusCode == 403) {
                     await this.reciveNewToken();
                     return this.getNote(id);
@@ -64,7 +68,7 @@ export class NotesServiceClient {
                 else {
                     return JSON.parse(await response.readBody()) as Note;
                 }
-            })
+            }).catch(this.handleError);
         });
     }
 
